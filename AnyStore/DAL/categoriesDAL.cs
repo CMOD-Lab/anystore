@@ -1,10 +1,10 @@
-﻿using AnyStore.BLL;
+using AnyStore.BLL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-// Replaced System.Data.SqlClient with Microsoft.Data.SqlClient for .NET 8 compatibility
-using Microsoft.Data.SqlClient;
+// Replaced Microsoft.Data.SqlClient with Npgsql for PostgreSQL 16 compatibility
+using Npgsql;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,21 +21,21 @@ namespace AnyStore.DAL
         public DataTable Select()
         {
             //Creating Database Connection
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             DataTable dt = new DataTable();
 
             try
             {
-                //Wrting SQL Query to get all the data from DAtabase
+                //Writing SQL Query to get all the data from Database
                 string sql = "SELECT * FROM tbl_categories";
 
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                //Open DAtabase Connection
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
+                //Open Database Connection
                 conn.Open();
-                //Adding the value from adapter to Data TAble dt
+                //Adding the value from adapter to DataTable dt
                 adapter.Fill(dt);
             }
             catch(Exception ex)
@@ -50,22 +50,22 @@ namespace AnyStore.DAL
             return dt;
         }
         #endregion
-        #region Insert New CAtegory
+        #region Insert New Category
         public bool Insert(categoriesBLL c)
         {
-            //Creating A Boolean VAriable and set its default value to false
+            //Creating A Boolean Variable and set its default value to false
             bool isSucces = false;
 
             //Connecting to Database
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
                 //Writing Query to Add New Category
                 string sql = "INSERT INTO tbl_categories (title, description, added_date, added_by) VALUES (@title, @description, @added_date, @added_by)";
 
-                //Creating SQL Command to pass values in our query
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                //Creating NpgsqlCommand to pass values in our query
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 //Passing Values through parameter
                 cmd.Parameters.AddWithValue("@title", c.title);
                 cmd.Parameters.AddWithValue("@description", c.description);
@@ -79,10 +79,9 @@ namespace AnyStore.DAL
                 int rows = cmd.ExecuteNonQuery();
 
                 //If the query is executed successfully then its value will be greater than 0 else it will be less than 0
-
                 if(rows>0)
                 {
-                    //Query Executed Succesfully
+                    //Query Executed Successfully
                     isSucces = true;
                 }
                 else
@@ -110,16 +109,16 @@ namespace AnyStore.DAL
             //Creating Boolean variable and set its default value to false
             bool isSuccess = false;
 
-            //Creating SQL Connection
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //Creating NpgsqlConnection
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
                 //Query to Update Category
                 string sql = "UPDATE tbl_categories SET title=@title, description=@description, added_date=@added_date, added_by=@added_by WHERE id=@id";
 
-                //SQl Command to Pass the Value on Sql Query
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                //NpgsqlCommand to Pass the Value on Sql Query
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 //Passing Value using cmd
                 cmd.Parameters.AddWithValue("@title", c.title);
@@ -128,13 +127,13 @@ namespace AnyStore.DAL
                 cmd.Parameters.AddWithValue("@added_by", c.added_by);
                 cmd.Parameters.AddWithValue("@id", c.id);
 
-                //Open DAtabase Connection
+                //Open Database Connection
                 conn.Open();
 
                 //Create Int Variable to execute query
                 int rows = cmd.ExecuteNonQuery();
 
-                //if the query is successfully executed then the value will be grater than zero 
+                //if the query is successfully executed then the value will be greater than zero 
                 if(rows>0)
                 {
                     //Query Executed Successfully
@@ -164,23 +163,23 @@ namespace AnyStore.DAL
             //Create a Boolean variable and set its value to false
             bool isSuccess = false;
 
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
                 //SQL Query to Delete from Database
                 string sql = "DELETE FROM tbl_categories WHERE id=@id";
 
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 //Passing the value using cmd
                 cmd.Parameters.AddWithValue("@id", c.id);
 
-                //Open SqlConnection
+                //Open NpgsqlConnection
                 conn.Open();
 
                 int rows = cmd.ExecuteNonQuery();
 
-                //If the query is executd successfully then the value of rows will be greater than zero else it will be less than 0
+                //If the query is executed successfully then the value of rows will be greater than zero else it will be less than 0
                 if(rows>0)
                 {
                     //Query Executed Successfully
@@ -188,7 +187,7 @@ namespace AnyStore.DAL
                 }
                 else
                 {
-                    //Faied to Execute Query
+                    //Failed to Execute Query
                     isSuccess = false;
                 }
 
@@ -205,28 +204,28 @@ namespace AnyStore.DAL
             return isSuccess;
         }
         #endregion
-        #region Method for Searh Funtionality
+        #region Method for Search Functionality
         public DataTable Search(string keywords)
         {
-            //SQL Connection For Database Connection
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //NpgsqlConnection For Database Connection
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
-            //Creating Data TAble to hold the data from database temporarily
+            //Creating DataTable to hold the data from database temporarily
             DataTable dt = new DataTable();
 
             try
             {
-                //SQL Query To Search Categories from DAtabase
-                String sql = "SELECT * FROM tbl_categories WHERE id LIKE '%"+keywords+"%' OR title LIKE '%"+keywords+"%' OR description LIKE '%"+keywords+"%'";
-                //Creating SQL Command to Execute the Query
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                // PostgreSQL: CAST id to TEXT for LIKE comparison (SQL Server allows LIKE on int directly)
+                String sql = "SELECT * FROM tbl_categories WHERE CAST(id AS TEXT) LIKE '%"+keywords+"%' OR title LIKE '%"+keywords+"%' OR description LIKE '%"+keywords+"%'";
+                //Creating NpgsqlCommand to Execute the Query
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
-                //Getting DAta From DAtabase
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                //Getting Data From Database
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
-                //Open DatabaseConnection
+                //Open Database Connection
                 conn.Open();
-                //Passing values from adapter to Data Table dt
+                //Passing values from adapter to DataTable dt
                 adapter.Fill(dt);
             }
             catch(Exception ex)

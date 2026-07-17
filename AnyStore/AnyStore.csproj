@@ -39,9 +39,6 @@
 
   <ItemGroup>
     <!-- Microsoft.Data.SqlClient replaces deprecated System.Data.SqlClient for .NET 8 compatibility -->
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
+    <!-- Npgsql replaces Microsoft.Data.SqlClient for PostgreSQL 16 compatibility -->
+    <PackageReference Include="Npgsql" Version="8.0.5" />
     <!-- System.Configuration.ConfigurationManager provides ConfigurationManager support in .NET 8 -->
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
-  </ItemGroup>
-
-</Project>

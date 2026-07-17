@@ -1,9 +1,9 @@
-﻿using AnyStore.BLL;
+using AnyStore.BLL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-// Replaced System.Data.SqlClient with Microsoft.Data.SqlClient for .NET 8 compatibility
-using Microsoft.Data.SqlClient;
+// Replaced Microsoft.Data.SqlClient with Npgsql for PostgreSQL 16 compatibility
+using Npgsql;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,15 +23,15 @@ namespace AnyStore.DAL
             bool isSuccess = false;
 
             //Create a database connection here
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
-                //Sql Query to Insert Transaction detais
+                //Sql Query to Insert Transaction details
                 string sql = "INSERT INTO tbl_transaction_detail (product_id, rate, qty, total, dea_cust_id, added_date, added_by) VALUES (@product_id, @rate, @qty, @total, @dea_cust_id, @added_date, @added_by)";
 
                 //Passing the value to the SQL Query
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 //Passing the values using cmd
                 cmd.Parameters.AddWithValue("@product_id", td.product_id);
                 cmd.Parameters.AddWithValue("@rate", td.rate);
@@ -54,7 +54,7 @@ namespace AnyStore.DAL
                 }
                 else
                 {
-                    //FAiled to Execute Query
+                    //Failed to Execute Query
                     isSuccess = false;
                 }
             }

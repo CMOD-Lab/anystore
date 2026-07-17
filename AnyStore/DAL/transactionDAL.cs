@@ -1,10 +1,10 @@
-﻿using AnyStore.BLL;
+using AnyStore.BLL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-// Replaced System.Data.SqlClient with Microsoft.Data.SqlClient for .NET 8 compatibility
-using Microsoft.Data.SqlClient;
+// Replaced Microsoft.Data.SqlClient with Npgsql for PostgreSQL 16 compatibility
+using Npgsql;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,15 +24,15 @@ namespace AnyStore.DAL
             bool isSuccess = false;
             //Set the out transactionID value to negative 1 i.e. -1
             transactionID = -1;
-            //Create a SqlConnection first
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //Create a NpgsqlConnection first
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
             try
             {
-                //SQL Query to Insert Transactions
-                string sql = "INSERT INTO tbl_transactions (type, dea_cust_id, grandTotal, transaction_date, tax, discount, added_by) VALUES (@type, @dea_cust_id, @grandTotal, @transaction_date, @tax, @discount, @added_by); SELECT @@IDENTITY;";
+                // PostgreSQL: Use RETURNING id instead of SELECT @@IDENTITY (SQL Server specific)
+                string sql = "INSERT INTO tbl_transactions (type, dea_cust_id, grandTotal, transaction_date, tax, discount, added_by) VALUES (@type, @dea_cust_id, @grandTotal, @transaction_date, @tax, @discount, @added_by) RETURNING id;";
 
-                //Sql Commandto pass the value in sql query
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                //NpgsqlCommand to pass the value in sql query
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 //Passing the value to sql query using cmd
                 cmd.Parameters.AddWithValue("@type", t.type);
@@ -78,10 +78,10 @@ namespace AnyStore.DAL
         #region METHOD TO DISPLAY ALL THE TRANSACTION
         public DataTable DisplayAllTransactions()
         {
-            //SQlConnection First
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //NpgsqlConnection First
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
-            //Create a DAta Table to hold the datafrom database temporarily
+            //Create a DataTable to hold the data from database temporarily
             DataTable dt = new DataTable();
 
             try
@@ -89,13 +89,13 @@ namespace AnyStore.DAL
                 //Write the SQL Query to Display all Transactions
                 string sql = "SELECT * FROM tbl_transactions";
 
-                //SqlCommand to Execute Query
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                //NpgsqlCommand to Execute Query
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
-                //SqlDataAdapter to Hold the data from database
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                //NpgsqlDataAdapter to Hold the data from database
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
-                //Open DAtabase Connection
+                //Open Database Connection
                 conn.Open();
 
                 adapter.Fill(dt);
@@ -115,8 +115,8 @@ namespace AnyStore.DAL
         #region METHOD TO DISPLAY TRANSACTION BASED ON TRANSACTION TYPE
         public DataTable DisplayTransactionByType(string type)
         {
-            //Create SQL Connection
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //Create NpgsqlConnection
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             //Create a DataTable
             DataTable dt = new DataTable();
@@ -126,12 +126,12 @@ namespace AnyStore.DAL
                 //Write SQL Query
                 string sql = "SELECT * FROM tbl_transactions WHERE type='"+type+"'";
 
-                //SQL Command to Execute Query
-                SqlCommand cmd = new SqlCommand(sql, conn);
-                //SQlDataAdapter to hold the data from database
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                //NpgsqlCommand to Execute Query
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
+                //NpgsqlDataAdapter to hold the data from database
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
-                //Open DAtabase Connection
+                //Open Database Connection
                 conn.Open();
                 adapter.Fill(dt);
             }

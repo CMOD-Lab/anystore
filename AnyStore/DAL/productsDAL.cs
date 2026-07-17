@@ -1,10 +1,10 @@
-﻿using AnyStore.BLL;
+using AnyStore.BLL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-// Replaced System.Data.SqlClient with Microsoft.Data.SqlClient for .NET 8 compatibility
-using Microsoft.Data.SqlClient;
+// Replaced Microsoft.Data.SqlClient with Npgsql for PostgreSQL 16 compatibility
+using Npgsql;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,16 +14,16 @@ namespace AnyStore.DAL
 {
     class productsDAL
     {
-        //Creating STATI String Method for DB Connection
+        //Creating STATIC String Method for DB Connection
         static string myconnstrng = ConfigurationManager.ConnectionStrings["connstrng"].ConnectionString;
 
         #region Select method for Product Module
         public DataTable Select()
         {
-            //Create Sql Connection to connect Databaes
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //Create NpgsqlConnection to connect Database
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
-            //DAtaTable to hold the data from database
+            //DataTable to hold the data from database
             DataTable dt = new DataTable();
 
             try
@@ -31,13 +31,13 @@ namespace AnyStore.DAL
                 //Writing the Query to Select all the products from database
                 String sql = "SELECT * FROM tbl_products";
 
-                //Creating SQL Command to Execute Query
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                //Creating NpgsqlCommand to Execute Query
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
-                //SQL Data Adapter to hold the value from database temporarily
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                //NpgsqlDataAdapter to hold the value from database temporarily
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
-                //Open DAtabase Connection
+                //Open Database Connection
                 conn.Open();
 
                 adapter.Fill(dt);
@@ -60,18 +60,18 @@ namespace AnyStore.DAL
             //Creating Boolean Variable and set its default value to false
             bool isSuccess = false;
 
-            //Sql Connection for DAtabase
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //NpgsqlConnection for Database
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
                 //SQL Query to insert product into database
                 String sql = "INSERT INTO tbl_products (name, category, description, rate, qty, added_date, added_by) VALUES (@name, @category, @description, @rate, @qty, @added_date, @added_by)";
 
-                //Creating SQL Command to pass the values
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                //Creating NpgsqlCommand to pass the values
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
-                //Passign the values through parameters
+                //Passing the values through parameters
                 cmd.Parameters.AddWithValue("@name", p.name);
                 cmd.Parameters.AddWithValue("@category", p.category);
                 cmd.Parameters.AddWithValue("@description", p.description);
@@ -93,7 +93,7 @@ namespace AnyStore.DAL
                 }
                 else
                 {
-                    //FAiled to Execute Query
+                    //Failed to Execute Query
                     isSuccess = false;
                 }
             }
@@ -115,16 +115,16 @@ namespace AnyStore.DAL
             //create a boolean variable and set its initial value to false
             bool isSuccess = false;
 
-            //Create SQL Connection for DAtabase
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //Create NpgsqlConnection for Database
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
-                //SQL Query to Update Data in dAtabase
+                //SQL Query to Update Data in database
                 String sql = "UPDATE tbl_products SET name=@name, category=@category, description=@description, rate=@rate, added_date=@added_date, added_by=@added_by WHERE id=@id";
 
-                //Create SQL Cmmand to pass the value to query
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                //Create NpgsqlCommand to pass the value to query
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 //Passing the values using parameters and cmd
                 cmd.Parameters.AddWithValue("@name", p.name);
                 cmd.Parameters.AddWithValue("@category", p.category);
@@ -144,7 +144,7 @@ namespace AnyStore.DAL
                 //if the query is executed successfully then the value of rows will be greater than 0 else it will be less than zero
                 if(rows>0)
                 {
-                    //Query ExecutedSuccessfully
+                    //Query Executed Successfully
                     isSuccess = true;
                 }
                 else
@@ -171,16 +171,16 @@ namespace AnyStore.DAL
             //Create Boolean Variable and Set its default value to false
             bool isSuccess = false;
 
-            //SQL Connection for DB connection
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //NpgsqlConnection for DB connection
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
-                //Write Query Product from DAtabase
+                //Write Query to Delete Product from Database
                 String sql = "DELETE FROM tbl_products WHERE id=@id";
 
-                //Sql Command to Pass the Value
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                //NpgsqlCommand to Pass the Value
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 //Passing the values using cmd
                 cmd.Parameters.AddWithValue("@id", p.id);
@@ -189,7 +189,7 @@ namespace AnyStore.DAL
                 conn.Open();
 
                 int rows = cmd.ExecuteNonQuery();
-                //If the query is executed successfullly then the value of rows will be greated than 0 else it will be less than 0
+                //If the query is executed successfully then the value of rows will be greater than 0 else it will be less than 0
                 if(rows>0)
                 {
                     //Query Executed Successfully
@@ -216,20 +216,20 @@ namespace AnyStore.DAL
         #region SEARCH Method for Product Module
         public DataTable Search (string keywords)
         {
-            //SQL Connection fro DB Connection
-            SqlConnection conn = new SqlConnection(myconnstrng);
-            //Creating DAtaTable to hold value from dAtabase
+            //NpgsqlConnection for DB Connection
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+            //Creating DataTable to hold value from database
             DataTable dt = new DataTable();
 
             try
             {
                 //SQL query to search product
-                string sql = "SELECT * FROM tbl_products WHERE id LIKE '%"+keywords+"%' OR name LIKE '%"+keywords+"%' OR category LIKE '%"+keywords+"%'";
-                //Sql Command to execute Query
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                string sql = "SELECT * FROM tbl_products WHERE CAST(id AS TEXT) LIKE '%"+keywords+"%' OR name LIKE '%"+keywords+"%' OR category LIKE '%"+keywords+"%'";
+                //NpgsqlCommand to execute Query
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
-                //SQL Data Adapter to hold the data from database temporarily
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                //NpgsqlDataAdapter to hold the data from database temporarily
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
                 //Open Database Connection
                 conn.Open();
@@ -253,19 +253,19 @@ namespace AnyStore.DAL
         {
             //Create an object of productsBLL and return it
             productsBLL p = new productsBLL();
-            //SqlConnection
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //NpgsqlConnection
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
             //Datatable to store data temporarily
             DataTable dt = new DataTable();
 
             try
             {
-                //Write the Query to Get the detaisl
-                string sql = "SELECT name, rate, qty FROM tbl_products WHERE id LIKE '%"+keyword+"%' OR name LIKE '%"+keyword+"%'";
-                //Create Sql Data Adapter to Execute the query
-                SqlDataAdapter adapter = new SqlDataAdapter(sql, conn);
+                //Write the Query to Get the details
+                string sql = "SELECT name, rate, qty FROM tbl_products WHERE CAST(id AS TEXT) LIKE '%"+keyword+"%' OR name LIKE '%"+keyword+"%'";
+                //Create NpgsqlDataAdapter to Execute the query
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(sql, conn);
 
-                //Open DAtabase Connection
+                //Open Database Connection
                 conn.Open();
 
                 //Pass the value from adapter to dt
@@ -295,28 +295,28 @@ namespace AnyStore.DAL
         #region METHOD TO GET PRODUCT ID BASED ON PRODUCT NAME
         public productsBLL GetProductIDFromName(string ProductName)
         {
-            //First Create an Object of DeaCust BLL and REturn it
+            //First Create an Object of productsBLL and Return it
             productsBLL p = new productsBLL();
 
-            //SQL Conection here
-            SqlConnection conn = new SqlConnection(myconnstrng);
-            //Data TAble to Holdthe data temporarily
+            //NpgsqlConnection here
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+            //DataTable to Hold the data temporarily
             DataTable dt = new DataTable();
 
             try
             {
                 //SQL Query to Get id based on Name
                 string sql = "SELECT id FROM tbl_products WHERE name='" + ProductName + "'";
-                //Create the SQL Data Adapter to Execute the Query
-                SqlDataAdapter adapter = new SqlDataAdapter(sql, conn);
+                //Create the NpgsqlDataAdapter to Execute the Query
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(sql, conn);
 
                 conn.Open();
 
-                //Passing the CAlue from Adapter to DAtatable
+                //Passing the Value from Adapter to DataTable
                 adapter.Fill(dt);
                 if (dt.Rows.Count > 0)
                 {
-                    //Pass the value from dt to DeaCustBLL dc
+                    //Pass the value from dt to productsBLL p
                     p.id = int.Parse(dt.Rows[0]["id"].ToString());
                 }
             }
@@ -332,32 +332,32 @@ namespace AnyStore.DAL
             return p;
         }
         #endregion
-        #region METHOD TO GET CURRENT QUantity from the Database based on Product ID
+        #region METHOD TO GET CURRENT QUANTITY from the Database based on Product ID
         public decimal GetProductQty(int ProductID)
         {
-            //SQl Connection First
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //NpgsqlConnection First
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
             //Create a Decimal Variable and set its default value to 0
             decimal qty = 0;
 
-            //Create Data Table to save the data from database temporarily
+            //Create DataTable to save the data from database temporarily
             DataTable dt = new DataTable();
 
             try
             {
-                //Write WQL Query to Get Quantity from Database
+                //Write SQL Query to Get Quantity from Database
                 string sql = "SELECT qty FROM tbl_products WHERE id = "+ProductID;
 
-                //Cerate A SqlCommand
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                //Create a NpgsqlCommand
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
-                //Create a SQL Data Adapter to Execute the query
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                //Create a NpgsqlDataAdapter to Execute the query
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
-                //open DAtabase Connection
+                //Open Database Connection
                 conn.Open();
 
-                //PAss the calue from Data Adapter to DataTable
+                //Pass the value from Data Adapter to DataTable
                 adapter.Fill(dt);
 
                 //Lets check if the datatable has value or not
@@ -385,17 +385,17 @@ namespace AnyStore.DAL
             //Create a Boolean Variable and Set its value to false
             bool success = false;
 
-            //SQl Connection to Connect Database
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //NpgsqlConnection to Connect Database
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
                 //Write the SQL Query to Update Qty
                 string sql = "UPDATE tbl_products SET qty=@qty WHERE id=@id";
 
-                //Create SQL Command to Pass the calue into Queyr
-                SqlCommand cmd = new SqlCommand(sql, conn);
-                //Passing the VAlue trhough parameters
+                //Create NpgsqlCommand to Pass the value into Query
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
+                //Passing the Value through parameters
                 cmd.Parameters.AddWithValue("@qty", Qty);
                 cmd.Parameters.AddWithValue("@id", ProductID);
 
@@ -431,21 +431,21 @@ namespace AnyStore.DAL
         #region METHOD TO INCREASE PRODUCT
         public bool IncreaseProduct(int ProductID, decimal IncreaseQty)
         {
-            //Create a Boolean Variable and SEt its value to False
+            //Create a Boolean Variable and Set its value to False
             bool success = false;
 
-            //Create SQL Connection To Connect DAtabase
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //Create NpgsqlConnection To Connect Database
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
-                //Get the Current Qty From dAtabase based on id
+                //Get the Current Qty From database based on id
                 decimal currentQty = GetProductQty(ProductID);
 
                 //Increase the Current Quantity by the qty purchased from Dealer
                 decimal NewQty = currentQty + IncreaseQty;
 
-                //Update the Prudcty Quantity Now
+                //Update the Product Quantity Now
                 success = UpdateQuantity(ProductID, NewQty);
             }
             catch(Exception ex)
@@ -462,10 +462,10 @@ namespace AnyStore.DAL
         #region METHOD TO DECREASE PRODUCT
         public bool DecreaseProduct(int ProductID, decimal Qty)
         {
-            //Create Boolean Variable and SEt its Value to false
+            //Create Boolean Variable and Set its Value to false
             bool success = false;
 
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
@@ -489,22 +489,22 @@ namespace AnyStore.DAL
             return success;
         }
         #endregion
-        #region DESPLAY PRODUCTS BASED ON CATEGORIES
+        #region DISPLAY PRODUCTS BASED ON CATEGORIES
         public DataTable DisplayProductsByCategory(string category)
         {
-            //Sql Connection First
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            //NpgsqlConnection First
+            NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             DataTable dt = new DataTable();
 
             try
             {
-                //SQL Query to Display Product Based on CAtegory
+                //SQL Query to Display Product Based on Category
                 string sql = "SELECT * FROM tbl_products WHERE category='"+category+"'";
 
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
                 //Open Database Connection Here
                 conn.Open();
