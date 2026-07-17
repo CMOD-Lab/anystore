@@ -1,8 +1,5 @@
-﻿using AnyStore.UI;
+using AnyStore.UI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AnyStore
@@ -15,6 +12,8 @@ namespace AnyStore
         [STAThread]
         static void Main()
         {
+            // .NET 8 Windows Forms: configure high DPI mode before any UI initialization
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmLogin());

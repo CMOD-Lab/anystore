@@ -1,4 +1,4 @@
-﻿using AnyStore.UI;
+using AnyStore.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,8 +18,9 @@ namespace AnyStore
             InitializeComponent();
         }
 
-        //Set a public static method to specify whether the form is purchase or sales
-        public static string transactionType;
+        //Set a public static field to specify whether the form is purchase or sales
+        public static string transactionType = string.Empty;
+
         private void frmUserDashboard_FormClosed(object sender, FormClosedEventArgs e)
         {
             frmLogin login = new frmLogin();
@@ -40,20 +41,18 @@ namespace AnyStore
 
         private void purchaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //set value on transactionType static method
+            //set value on transactionType static field
             transactionType = "Purchase";
             frmPurchaseAndSales purchase = new frmPurchaseAndSales();
             purchase.Show();
-            
         }
 
         private void salesFormsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //Set the value to transacionType method to sales
+            //Set the value to transactionType field to sales
             transactionType = "Sales";
             frmPurchaseAndSales sales = new frmPurchaseAndSales();
             sales.Show();
-            
         }
 
         private void inventoryToolStripMenuItem_Click(object sender, EventArgs e)

@@ -1,12 +1,7 @@
-﻿using AnyStore.BLL;
-using System;
-using System.Collections.Generic;
+using AnyStore.BLL;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace AnyStore.DAL
@@ -196,7 +191,7 @@ namespace AnyStore.DAL
             try
             {
                 //SQL Query to Get Data From DAtabase
-                String sql = "SELECT * FROM tbl_users WHERE id LIKE '%"+keywords+"%' OR first_name LIKE '%"+keywords+"%' OR last_name LIKE '%"+keywords+"%' OR username LIKE '%"+keywords+"%'";
+                String sql = "SELECT * FROM tbl_users WHERE id LIKE '%" + keywords + "%' OR first_name LIKE '%" + keywords + "%' OR last_name LIKE '%" + keywords + "%' OR username LIKE '%" + keywords + "%'";
                 //For Executing Command
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 //Getting DAta from dAtabase
@@ -221,7 +216,7 @@ namespace AnyStore.DAL
         }
         #endregion
         #region Getting User ID from Username
-        public userBLL GetIDFromUsername (string username)
+        public userBLL GetIDFromUsername(string username)
         {
             userBLL u = new userBLL();
             SqlConnection conn = new SqlConnection(myconnstrng);
@@ -229,7 +224,7 @@ namespace AnyStore.DAL
 
             try
             {
-                string sql = "SELECT id FROM tbl_users WHERE username='"+username+"'";
+                string sql = "SELECT id FROM tbl_users WHERE username='" + username + "'";
 
                 SqlDataAdapter adapter = new SqlDataAdapter(sql, conn);
                 conn.Open();
@@ -237,7 +232,7 @@ namespace AnyStore.DAL
                 adapter.Fill(dt);
                 if(dt.Rows.Count>0)
                 {
-                    u.id = int.Parse(dt.Rows[0]["id"].ToString());
+                    u.id = int.Parse(dt.Rows[0]["id"].ToString()!);
                 }
             }
             catch(Exception ex)

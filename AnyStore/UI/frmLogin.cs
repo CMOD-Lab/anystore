@@ -1,4 +1,4 @@
-﻿using AnyStore.BLL;
+using AnyStore.BLL;
 using AnyStore.DAL;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace AnyStore.UI
 
         loginBLL l = new loginBLL();
         loginDAL dal = new loginDAL();
-        public static string loggedIn;
+        public static string loggedIn = string.Empty;
 
         private void pboxClose_Click(object sender, EventArgs e)
         {
@@ -41,7 +41,7 @@ namespace AnyStore.UI
             {
                 //Login Successfull
                 MessageBox.Show("Login Successful.");
-                loggedIn = l.username;
+                loggedIn = l.username ?? string.Empty;
                 //Need to open Respective Forms based on User Type
                 switch(l.user_type)
                 {

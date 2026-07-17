@@ -1,12 +1,7 @@
-﻿using AnyStore.BLL;
-using System;
-using System.Collections.Generic;
+using AnyStore.BLL;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace AnyStore.DAL
@@ -213,7 +208,7 @@ namespace AnyStore.DAL
         }
         #endregion
         #region SEARCH Method for Product Module
-        public DataTable Search (string keywords)
+        public DataTable Search(string keywords)
         {
             //SQL Connection fro DB Connection
             SqlConnection conn = new SqlConnection(myconnstrng);
@@ -223,7 +218,7 @@ namespace AnyStore.DAL
             try
             {
                 //SQL query to search product
-                string sql = "SELECT * FROM tbl_products WHERE id LIKE '%"+keywords+"%' OR name LIKE '%"+keywords+"%' OR category LIKE '%"+keywords+"%'";
+                string sql = "SELECT * FROM tbl_products WHERE id LIKE '%" + keywords + "%' OR name LIKE '%" + keywords + "%' OR category LIKE '%" + keywords + "%'";
                 //Sql Command to execute Query
                 SqlCommand cmd = new SqlCommand(sql, conn);
 
@@ -260,7 +255,7 @@ namespace AnyStore.DAL
             try
             {
                 //Write the Query to Get the detaisl
-                string sql = "SELECT name, rate, qty FROM tbl_products WHERE id LIKE '%"+keyword+"%' OR name LIKE '%"+keyword+"%'";
+                string sql = "SELECT name, rate, qty FROM tbl_products WHERE id LIKE '%" + keyword + "%' OR name LIKE '%" + keyword + "%'";
                 //Create Sql Data Adapter to Execute the query
                 SqlDataAdapter adapter = new SqlDataAdapter(sql, conn);
 
@@ -274,8 +269,8 @@ namespace AnyStore.DAL
                 if(dt.Rows.Count>0)
                 {
                     p.name = dt.Rows[0]["name"].ToString();
-                    p.rate = decimal.Parse(dt.Rows[0]["rate"].ToString());
-                    p.qty = decimal.Parse(dt.Rows[0]["qty"].ToString());
+                    p.rate = decimal.Parse(dt.Rows[0]["rate"].ToString()!);
+                    p.qty = decimal.Parse(dt.Rows[0]["qty"].ToString()!);
                 }
             }
             catch(Exception ex)
@@ -316,7 +311,7 @@ namespace AnyStore.DAL
                 if (dt.Rows.Count > 0)
                 {
                     //Pass the value from dt to DeaCustBLL dc
-                    p.id = int.Parse(dt.Rows[0]["id"].ToString());
+                    p.id = int.Parse(dt.Rows[0]["id"].ToString()!);
                 }
             }
             catch (Exception ex)
@@ -345,7 +340,7 @@ namespace AnyStore.DAL
             try
             {
                 //Write WQL Query to Get Quantity from Database
-                string sql = "SELECT qty FROM tbl_products WHERE id = "+ProductID;
+                string sql = "SELECT qty FROM tbl_products WHERE id = " + ProductID;
 
                 //Cerate A SqlCommand
                 SqlCommand cmd = new SqlCommand(sql, conn);
@@ -362,7 +357,7 @@ namespace AnyStore.DAL
                 //Lets check if the datatable has value or not
                 if(dt.Rows.Count>0)
                 {
-                    qty = decimal.Parse(dt.Rows[0]["qty"].ToString());
+                    qty = decimal.Parse(dt.Rows[0]["qty"].ToString()!);
                 }
             }
             catch(Exception ex)
@@ -499,7 +494,7 @@ namespace AnyStore.DAL
             try
             {
                 //SQL Query to Display Product Based on CAtegory
-                string sql = "SELECT * FROM tbl_products WHERE category='"+category+"'";
+                string sql = "SELECT * FROM tbl_products WHERE category='" + category + "'";
 
                 SqlCommand cmd = new SqlCommand(sql, conn);
 

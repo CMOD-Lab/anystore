@@ -1,12 +1,7 @@
-﻿using AnyStore.BLL;
-using System;
-using System.Collections.Generic;
+using AnyStore.BLL;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace AnyStore.DAL
@@ -219,7 +214,7 @@ namespace AnyStore.DAL
             try
             {
                 //Write the Query to Search Dealer or Customer Based in id, type and name
-                string sql = "SELECT * FROM tbl_dea_cust WHERE id LIKE '%"+keyword+"%' OR type LIKE '%"+keyword+"%' OR name LIKE '%"+keyword+"%'";
+                string sql = "SELECT * FROM tbl_dea_cust WHERE id LIKE '%" + keyword + "%' OR type LIKE '%" + keyword + "%' OR name LIKE '%" + keyword + "%'";
 
                 //Sql Command to Execute the Query
                 SqlCommand cmd = new SqlCommand(sql, conn);
@@ -258,7 +253,7 @@ namespace AnyStore.DAL
             try
             {
                 //Write a SQL Query to Search Dealer or Customer Based on Keywords
-                string sql = "SELECT name, email, contact, address from tbl_dea_cust WHERE id LIKE '%"+keyword+"%' OR name LIKE '%"+keyword+"%'";
+                string sql = "SELECT name, email, contact, address from tbl_dea_cust WHERE id LIKE '%" + keyword + "%' OR name LIKE '%" + keyword + "%'";
 
                 //Create a Sql Data Adapter to Execute the Query
                 SqlDataAdapter adapter = new SqlDataAdapter(sql, conn);
@@ -306,7 +301,7 @@ namespace AnyStore.DAL
             try
             {
                 //SQL Query to Get id based on Name
-                string sql = "SELECT id FROM tbl_dea_cust WHERE name='"+Name+"'";
+                string sql = "SELECT id FROM tbl_dea_cust WHERE name='" + Name + "'";
                 //Create the SQL Data Adapter to Execute the Query
                 SqlDataAdapter adapter = new SqlDataAdapter(sql, conn);
 
@@ -317,7 +312,7 @@ namespace AnyStore.DAL
                 if(dt.Rows.Count>0)
                 {
                     //Pass the value from dt to DeaCustBLL dc
-                    dc.id = int.Parse(dt.Rows[0]["id"].ToString());
+                    dc.id = int.Parse(dt.Rows[0]["id"].ToString()!);
                 }
             }
             catch(Exception ex)

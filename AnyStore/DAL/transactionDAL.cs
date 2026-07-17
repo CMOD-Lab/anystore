@@ -1,12 +1,7 @@
-﻿using AnyStore.BLL;
-using System;
-using System.Collections.Generic;
+using AnyStore.BLL;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace AnyStore.DAL
@@ -46,13 +41,13 @@ namespace AnyStore.DAL
                 conn.Open();
 
                 //Execute the Query
-                object o = cmd.ExecuteScalar();
+                object? o = cmd.ExecuteScalar();
 
                 //If the query is executed successfully then the value will not be null else it will be null
                 if(o!=null)
                 {
                     //Query Executed Successfully
-                    transactionID = int.Parse(o.ToString());
+                    transactionID = int.Parse(o.ToString()!);
                     isSuccess = true;
                 }
                 else
