@@ -2,7 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
+// Replaced System.Data.SqlClient with Microsoft.Data.SqlClient for .NET 8 compatibility
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;

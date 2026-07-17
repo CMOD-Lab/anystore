@@ -1,8 +1,5 @@
-﻿using AnyStore.UI;
+using AnyStore.UI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AnyStore
@@ -11,10 +8,13 @@ namespace AnyStore
     {
         /// <summary>
         /// The main entry point for the application.
+        /// Updated for .NET 8: Application.SetHighDpiMode added for proper DPI handling.
         /// </summary>
         [STAThread]
         static void Main()
         {
+            // .NET 8 recommended: Configure DPI awareness before any UI initialization
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmLogin());
