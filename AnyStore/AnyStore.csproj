@@ -13,6 +13,8 @@
     <!-- ImplicitUsings enabled for .NET 8 conventions -->
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>AnyCPU</Platforms>
+    <!-- Required to build Windows-targeting projects on non-Windows OS -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <ApplicationIcon />
     <StartupObject />
     <!-- Assembly metadata for .NET 8 SDK-style project -->
@@ -24,7 +26,7 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <!-- Suppress warnings for legacy code patterns during migration -->
-    <NoWarn>CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8625;CS0618;CS1591</NoWarn>
+    <NoWarn>CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8625;CS8629;CS0618;CS1591</NoWarn>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -38,7 +40,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Microsoft.Data.SqlClient replaces deprecated System.Data.SqlClient for .NET 8 compatibility -->
     <!-- Npgsql replaces Microsoft.Data.SqlClient for PostgreSQL 16 compatibility -->
     <PackageReference Include="Npgsql" Version="8.0.5" />
     <!-- System.Configuration.ConfigurationManager provides ConfigurationManager support in .NET 8 -->
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>AnyStore.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

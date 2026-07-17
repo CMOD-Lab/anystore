@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8625;CS8629</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="10.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.6.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Include BLL source files directly (they have no Windows Forms dependencies) -->
+  <ItemGroup>
+    <Compile Include="../AnyStore/BLL/userBLL.cs" Link="BLLSource/userBLL.cs" />
+    <Compile Include="../AnyStore/BLL/loginBLL.cs" Link="BLLSource/loginBLL.cs" />
+    <Compile Include="../AnyStore/BLL/DeaCustBLL.cs" Link="BLLSource/DeaCustBLL.cs" />
+    <Compile Include="../AnyStore/BLL/productsBLL.cs" Link="BLLSource/productsBLL.cs" />
+    <Compile Include="../AnyStore/BLL/categoriesBLL.cs" Link="BLLSource/categoriesBLL.cs" />
+    <Compile Include="../AnyStore/BLL/transactionsBLL.cs" Link="BLLSource/transactionsBLL.cs" />
+    <Compile Include="../AnyStore/BLL/transactionDetailBLL.cs" Link="BLLSource/transactionDetailBLL.cs" />
+  </ItemGroup>
+
+</Project>
