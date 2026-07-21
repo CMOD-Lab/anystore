@@ -1,9 +1,9 @@
-﻿using AnyStore.BLL;
+using AnyStore.BLL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,24 +13,25 @@ namespace AnyStore.DAL
 {
     class loginDAL
     {
-        //Static String to Connect Database
+        // Static String to Connect Database
+        // ConfigurationManager is provided by System.Configuration.ConfigurationManager NuGet package in .NET 8
         static string myconnstrng = ConfigurationManager.ConnectionStrings["connstrng"].ConnectionString;
 
         public bool loginCheck(loginBLL l)
         {
-            //Create a boolean variable and set its value to false and return it
+            // Create a boolean variable and set its value to false and return it
             bool isSuccess = false;
 
-            //Connecting To DAtabase
-            SqlConnection conn = new SqlConnection(myconnstrng);
+            // Connecting To Database using Microsoft.Data.SqlClient (replaces System.Data.SqlClient in .NET 8)
+            using SqlConnection conn = new SqlConnection(myconnstrng);
 
             try
             {
-                //SQL Query to check login
+                // SQL Query to check login
                 string sql = "SELECT * FROM tbl_users WHERE username=@username AND password=@password AND user_type=@user_type";
 
-                //Creating SQL Command to pass value
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                // Creating SQL Command to pass value
+                using SqlCommand cmd = new SqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@username", l.username);
                 cmd.Parameters.AddWithValue("@password", l.password);
@@ -42,25 +43,21 @@ namespace AnyStore.DAL
 
                 adapter.Fill(dt);
 
-                //Checking The rows in DataTable 
-                if(dt.Rows.Count>0)
+                // Checking The rows in DataTable
+                if (dt.Rows.Count > 0)
                 {
-                    //Login Sucessful
+                    // Login Successful
                     isSuccess = true;
                 }
                 else
                 {
-                    //Login Failed
+                    // Login Failed
                     isSuccess = false;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                conn.Close();
             }
 
             return isSuccess;

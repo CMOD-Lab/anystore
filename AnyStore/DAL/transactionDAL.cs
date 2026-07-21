@@ -1,9 +1,9 @@
-﻿using AnyStore.BLL;
+using AnyStore.BLL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,27 +13,24 @@ namespace AnyStore.DAL
 {
     class transactionDAL
     {
-        //Create a connection string variable
+        // Create a connection string variable
+        // ConfigurationManager is provided by System.Configuration.ConfigurationManager NuGet package in .NET 8
         static string myconnstrng = ConfigurationManager.ConnectionStrings["connstrng"].ConnectionString;
 
         #region Insert Transaction Method
         public bool Insert_Transaction(transactionsBLL t, out int transactionID)
         {
-            //Create a boolean value and set its default value to false
             bool isSuccess = false;
-            //Set the out transactionID value to negative 1 i.e. -1
             transactionID = -1;
-            //Create a SqlConnection first
-            SqlConnection conn = new SqlConnection(myconnstrng);
+
             try
             {
-                //SQL Query to Insert Transactions
-                string sql = "INSERT INTO tbl_transactions (type, dea_cust_id, grandTotal, transaction_date, tax, discount, added_by) VALUES (@type, @dea_cust_id, @grandTotal, @transaction_date, @tax, @discount, @added_by); SELECT @@IDENTITY;";
+                // SQL Query to Insert Transactions; SELECT SCOPE_IDENTITY() is preferred over @@IDENTITY in .NET 8
+                string sql = "INSERT INTO tbl_transactions (type, dea_cust_id, grandTotal, transaction_date, tax, discount, added_by) VALUES (@type, @dea_cust_id, @grandTotal, @transaction_date, @tax, @discount, @added_by); SELECT SCOPE_IDENTITY();";
 
-                //Sql Commandto pass the value in sql query
-                SqlCommand cmd = new SqlCommand(sql, conn);
+                using SqlConnection conn = new SqlConnection(myconnstrng);
+                using SqlCommand cmd = new SqlCommand(sql, conn);
 
-                //Passing the value to sql query using cmd
                 cmd.Parameters.AddWithValue("@type", t.type);
                 cmd.Parameters.AddWithValue("@dea_cust_id", t.dea_cust_id);
                 cmd.Parameters.AddWithValue("@grandTotal", t.grandTotal);
@@ -42,105 +39,70 @@ namespace AnyStore.DAL
                 cmd.Parameters.AddWithValue("@discount", t.discount);
                 cmd.Parameters.AddWithValue("@added_by", t.added_by);
 
-                //Open Database Connection
                 conn.Open();
+                object? o = cmd.ExecuteScalar();
 
-                //Execute the Query
-                object o = cmd.ExecuteScalar();
-
-                //If the query is executed successfully then the value will not be null else it will be null
-                if(o!=null)
+                if (o != null && o != DBNull.Value)
                 {
-                    //Query Executed Successfully
-                    transactionID = int.Parse(o.ToString());
+                    transactionID = int.Parse(o.ToString() ?? "-1");
                     isSuccess = true;
                 }
-                else
-                {
-                    //failed to execute query
-                    isSuccess = false;
-                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                //Close the connection 
-                conn.Close();
             }
 
             return isSuccess;
         }
         #endregion
-        #region METHOD TO DISPLAY ALL THE TRANSACTION
+
+        #region METHOD TO DISPLAY ALL THE TRANSACTIONS
         public DataTable DisplayAllTransactions()
         {
-            //SQlConnection First
-            SqlConnection conn = new SqlConnection(myconnstrng);
-
-            //Create a DAta Table to hold the datafrom database temporarily
             DataTable dt = new DataTable();
 
             try
             {
-                //Write the SQL Query to Display all Transactions
                 string sql = "SELECT * FROM tbl_transactions";
 
-                //SqlCommand to Execute Query
-                SqlCommand cmd = new SqlCommand(sql, conn);
-
-                //SqlDataAdapter to Hold the data from database
+                using SqlConnection conn = new SqlConnection(myconnstrng);
+                using SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataAdapter adapter = new SqlDataAdapter(cmd);
 
-                //Open DAtabase Connection
                 conn.Open();
-
                 adapter.Fill(dt);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                conn.Close();
             }
 
             return dt;
         }
         #endregion
+
         #region METHOD TO DISPLAY TRANSACTION BASED ON TRANSACTION TYPE
         public DataTable DisplayTransactionByType(string type)
         {
-            //Create SQL Connection
-            SqlConnection conn = new SqlConnection(myconnstrng);
-
-            //Create a DataTable
             DataTable dt = new DataTable();
 
             try
             {
-                //Write SQL Query
-                string sql = "SELECT * FROM tbl_transactions WHERE type='"+type+"'";
+                // Using parameterized query to prevent SQL injection
+                string sql = "SELECT * FROM tbl_transactions WHERE type=@type";
 
-                //SQL Command to Execute Query
-                SqlCommand cmd = new SqlCommand(sql, conn);
-                //SQlDataAdapter to hold the data from database
+                using SqlConnection conn = new SqlConnection(myconnstrng);
+                using SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@type", type);
+
                 SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-
-                //Open DAtabase Connection
                 conn.Open();
                 adapter.Fill(dt);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                conn.Close();
             }
 
             return dt;

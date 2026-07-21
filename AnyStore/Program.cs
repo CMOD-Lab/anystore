@@ -1,8 +1,5 @@
-﻿using AnyStore.UI;
+using AnyStore.UI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AnyStore
@@ -15,8 +12,8 @@ namespace AnyStore
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            // .NET 8 Windows Forms initialization
+            ApplicationConfiguration.Initialize();
             Application.Run(new frmLogin());
         }
     }
