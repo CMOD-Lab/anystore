@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,11 +25,11 @@ namespace AnyStore.DAL
 
             try
             {
-                // SQL Query to Insert Transactions; SELECT SCOPE_IDENTITY() is preferred over @@IDENTITY in .NET 8
-                string sql = "INSERT INTO tbl_transactions (type, dea_cust_id, grandTotal, transaction_date, tax, discount, added_by) VALUES (@type, @dea_cust_id, @grandTotal, @transaction_date, @tax, @discount, @added_by); SELECT SCOPE_IDENTITY();";
+                // SQL Query to Insert Transactions; RETURNING id is the PostgreSQL equivalent of SCOPE_IDENTITY()
+                string sql = "INSERT INTO tbl_transactions (type, dea_cust_id, grandTotal, transaction_date, tax, discount, added_by) VALUES (@type, @dea_cust_id, @grandTotal, @transaction_date, @tax, @discount, @added_by) RETURNING id;";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@type", t.type);
                 cmd.Parameters.AddWithValue("@dea_cust_id", t.dea_cust_id);
@@ -66,9 +66,9 @@ namespace AnyStore.DAL
             {
                 string sql = "SELECT * FROM tbl_transactions";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
                 conn.Open();
                 adapter.Fill(dt);
@@ -92,11 +92,11 @@ namespace AnyStore.DAL
                 // Using parameterized query to prevent SQL injection
                 string sql = "SELECT * FROM tbl_transactions WHERE type=@type";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@type", type);
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
                 conn.Open();
                 adapter.Fill(dt);
             }

@@ -2,7 +2,7 @@ using AnyStore.BLL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,8 +25,8 @@ namespace AnyStore.DAL
             {
                 string sql = "INSERT INTO tbl_transaction_detail (product_id, rate, qty, total, dea_cust_id, added_date, added_by) VALUES (@product_id, @rate, @qty, @total, @dea_cust_id, @added_date, @added_by)";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@product_id", td.product_id);
                 cmd.Parameters.AddWithValue("@rate", td.rate);

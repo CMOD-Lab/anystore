@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,10 +28,10 @@ namespace AnyStore.DAL
                 // Writing the Query to Select all the products from database
                 string sql = "SELECT * FROM tbl_products";
 
-                // Using Microsoft.Data.SqlClient (replaces System.Data.SqlClient in .NET 8)
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                // Using Npgsql (PostgreSQL ADO.NET provider replacing Microsoft.Data.SqlClient)
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
                 conn.Open();
                 adapter.Fill(dt);
@@ -54,8 +54,8 @@ namespace AnyStore.DAL
             {
                 string sql = "INSERT INTO tbl_products (name, category, description, rate, qty, added_date, added_by) VALUES (@name, @category, @description, @rate, @qty, @added_date, @added_by)";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@name", p.name);
                 cmd.Parameters.AddWithValue("@category", p.category);
@@ -88,8 +88,8 @@ namespace AnyStore.DAL
             {
                 string sql = "UPDATE tbl_products SET name=@name, category=@category, description=@description, rate=@rate, added_date=@added_date, added_by=@added_by WHERE id=@id";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@name", p.name);
                 cmd.Parameters.AddWithValue("@category", p.category);
@@ -123,8 +123,8 @@ namespace AnyStore.DAL
             {
                 string sql = "DELETE FROM tbl_products WHERE id=@id";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@id", p.id);
 
@@ -150,13 +150,14 @@ namespace AnyStore.DAL
             try
             {
                 // Using parameterized query to prevent SQL injection
-                string sql = "SELECT * FROM tbl_products WHERE CAST(id AS NVARCHAR) LIKE @kw OR name LIKE @kw OR category LIKE @kw";
+                // CAST(id AS TEXT) is the PostgreSQL equivalent of CAST(id AS NVARCHAR)
+                string sql = "SELECT * FROM tbl_products WHERE CAST(id AS TEXT) LIKE @kw OR name LIKE @kw OR category LIKE @kw";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@kw", "%" + keywords + "%");
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
                 conn.Open();
                 adapter.Fill(dt);
             }
@@ -177,10 +178,11 @@ namespace AnyStore.DAL
 
             try
             {
-                string sql = "SELECT name, rate, qty FROM tbl_products WHERE CAST(id AS NVARCHAR) LIKE @kw OR name LIKE @kw";
+                // CAST(id AS TEXT) is the PostgreSQL equivalent of CAST(id AS NVARCHAR)
+                string sql = "SELECT name, rate, qty FROM tbl_products WHERE CAST(id AS TEXT) LIKE @kw OR name LIKE @kw";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                SqlDataAdapter adapter = new SqlDataAdapter(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(sql, conn);
                 adapter.SelectCommand.Parameters.AddWithValue("@kw", "%" + keyword + "%");
 
                 conn.Open();
@@ -212,11 +214,11 @@ namespace AnyStore.DAL
             {
                 string sql = "SELECT id FROM tbl_products WHERE name=@name";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@name", ProductName);
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
                 conn.Open();
                 adapter.Fill(dt);
 
@@ -244,11 +246,11 @@ namespace AnyStore.DAL
             {
                 string sql = "SELECT qty FROM tbl_products WHERE id=@id";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@id", ProductID);
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
                 conn.Open();
                 adapter.Fill(dt);
 
@@ -275,8 +277,8 @@ namespace AnyStore.DAL
             {
                 string sql = "UPDATE tbl_products SET qty=@qty WHERE id=@id";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@qty", Qty);
                 cmd.Parameters.AddWithValue("@id", ProductID);
 
@@ -342,11 +344,11 @@ namespace AnyStore.DAL
             {
                 string sql = "SELECT * FROM tbl_products WHERE category=@category";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@category", category);
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
                 conn.Open();
                 adapter.Fill(dt);
             }

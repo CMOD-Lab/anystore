@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <!-- Updated TargetFramework from net6.0-windows to net8.0-windows for .NET 8 compatibility -->
+    <!-- Updated TargetFramework to net8.0-windows for .NET 8 compatibility -->
     <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>AnyStore</RootNamespace>
     <AssemblyName>AnyStore</AssemblyName>
@@ -18,16 +18,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Microsoft.Data.SqlClient 5.2.1 replaces System.Data.SqlClient for .NET 8 -->
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
+    <!-- Npgsql 8.0.5: PostgreSQL ADO.NET data provider replacing Microsoft.Data.SqlClient -->
+    <PackageReference Include="Npgsql" Version="8.0.5" />
     <!-- System.Configuration.ConfigurationManager 8.0.0 for ConfigurationManager support in .NET 8 -->
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
-    <!--
-      NOTE: Microsoft.EntityFrameworkCore and Microsoft.AspNetCore.App are NOT used by this
-      Windows Forms application. This project uses direct ADO.NET (Microsoft.Data.SqlClient)
-      for data access and does not require EF Core or ASP.NET Core packages.
-      The analysis report flagged these as needing updates, but they are not applicable here.
-    -->
   </ItemGroup>
 
 </Project>

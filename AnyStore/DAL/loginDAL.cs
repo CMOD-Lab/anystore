@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +22,8 @@ namespace AnyStore.DAL
             // Create a boolean variable and set its value to false and return it
             bool isSuccess = false;
 
-            // Connecting To Database using Microsoft.Data.SqlClient (replaces System.Data.SqlClient in .NET 8)
-            using SqlConnection conn = new SqlConnection(myconnstrng);
+            // Connecting To Database using Npgsql (PostgreSQL ADO.NET provider replacing Microsoft.Data.SqlClient)
+            using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
 
             try
             {
@@ -31,13 +31,13 @@ namespace AnyStore.DAL
                 string sql = "SELECT * FROM tbl_users WHERE username=@username AND password=@password AND user_type=@user_type";
 
                 // Creating SQL Command to pass value
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@username", l.username);
                 cmd.Parameters.AddWithValue("@password", l.password);
                 cmd.Parameters.AddWithValue("@user_type", l.user_type);
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
                 DataTable dt = new DataTable();
 

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,9 +26,9 @@ namespace AnyStore.DAL
             {
                 string sql = "SELECT * FROM tbl_dea_cust";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
 
                 conn.Open();
                 adapter.Fill(dt);
@@ -51,8 +51,8 @@ namespace AnyStore.DAL
             {
                 string sql = "INSERT INTO tbl_dea_cust (type, name, email, contact, address, added_date, added_by) VALUES (@type, @name, @email, @contact, @address, @added_date, @added_by)";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@type", dc.type);
                 cmd.Parameters.AddWithValue("@name", dc.name);
@@ -84,8 +84,8 @@ namespace AnyStore.DAL
             {
                 string sql = "UPDATE tbl_dea_cust SET type=@type, name=@name, email=@email, contact=@contact, address=@address, added_date=@added_date, added_by=@added_by WHERE id=@id";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@type", dc.type);
                 cmd.Parameters.AddWithValue("@name", dc.name);
@@ -118,8 +118,8 @@ namespace AnyStore.DAL
             {
                 string sql = "DELETE FROM tbl_dea_cust WHERE id=@id";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@id", dc.id);
 
                 conn.Open();
@@ -143,13 +143,14 @@ namespace AnyStore.DAL
             try
             {
                 // Using parameterized query to prevent SQL injection
-                string sql = "SELECT * FROM tbl_dea_cust WHERE CAST(id AS NVARCHAR) LIKE @kw OR type LIKE @kw OR name LIKE @kw";
+                // CAST(id AS TEXT) is the PostgreSQL equivalent of CAST(id AS NVARCHAR)
+                string sql = "SELECT * FROM tbl_dea_cust WHERE CAST(id AS TEXT) LIKE @kw OR type LIKE @kw OR name LIKE @kw";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@kw", "%" + keyword + "%");
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
                 conn.Open();
                 adapter.Fill(dt);
             }
@@ -171,10 +172,11 @@ namespace AnyStore.DAL
             try
             {
                 // Using parameterized query to prevent SQL injection
-                string sql = "SELECT name, email, contact, address FROM tbl_dea_cust WHERE CAST(id AS NVARCHAR) LIKE @kw OR name LIKE @kw";
+                // CAST(id AS TEXT) is the PostgreSQL equivalent of CAST(id AS NVARCHAR)
+                string sql = "SELECT name, email, contact, address FROM tbl_dea_cust WHERE CAST(id AS TEXT) LIKE @kw OR name LIKE @kw";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                SqlDataAdapter adapter = new SqlDataAdapter(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(sql, conn);
                 adapter.SelectCommand.Parameters.AddWithValue("@kw", "%" + keyword + "%");
 
                 conn.Open();
@@ -208,11 +210,11 @@ namespace AnyStore.DAL
                 // Using parameterized query to prevent SQL injection
                 string sql = "SELECT id FROM tbl_dea_cust WHERE name=@name";
 
-                using SqlConnection conn = new SqlConnection(myconnstrng);
-                using SqlCommand cmd = new SqlCommand(sql, conn);
+                using NpgsqlConnection conn = new NpgsqlConnection(myconnstrng);
+                using NpgsqlCommand cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@name", Name);
 
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
                 conn.Open();
                 adapter.Fill(dt);
 
